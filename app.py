@@ -17,7 +17,6 @@ st.set_page_config(
 # Custom CSS with proper text colors for both light and dark mode
 st.markdown("""
 <style>
-    /* Main header */
     .main-header {
         font-size: 2.5rem;
         color: inherit;
@@ -31,8 +30,6 @@ st.markdown("""
         margin-bottom: 2rem;
         opacity: 0.8;
     }
-    
-    /* Prediction cards */
     .prediction-card {
         background-color: var(--secondary-background-color);
         padding: 1.5rem;
@@ -51,8 +48,6 @@ st.markdown("""
         font-size: 2rem;
         font-weight: bold;
     }
-    
-    /* Warning and info cards */
     .warning-card {
         background-color: #fff3cd;
         border: 1px solid #ffc107;
@@ -69,61 +64,12 @@ st.markdown("""
         margin: 1rem 0;
         color: #0c5460;
     }
-    
-    /* Recommendations - using light colors that work in both modes */
-    .recommendation-high {
-        background-color: #f8d7da;
-        border-left: 4px solid #e74c3c;
-        border-radius: 8px;
-        padding: 12px;
-        margin-bottom: 10px;
-        color: #721c24;
-    }
-    .recommendation-medium {
-        background-color: #fff3cd;
-        border-left: 4px solid #f39c12;
-        border-radius: 8px;
-        padding: 12px;
-        margin-bottom: 10px;
-        color: #856404;
-    }
-    .recommendation-low {
-        background-color: #d4edda;
-        border-left: 4px solid #27ae60;
-        border-radius: 8px;
-        padding: 12px;
-        margin-bottom: 10px;
-        color: #155724;
-    }
-    .recommendation-info {
-        background-color: #d1ecf1;
-        border-left: 4px solid #3498db;
-        border-radius: 8px;
-        padding: 12px;
-        margin-bottom: 10px;
-        color: #0c5460;
-    }
-    
-    /* Ensure all text is visible */
-    .stMarkdown, .stText, .stInfo, .stWarning, .stSuccess {
-        color: inherit;
-    }
-    
-    /* Fix metric colors */
-    [data-testid="stMetricValue"] {
-        color: inherit;
-    }
-    
-    /* Fix dataframe text */
-    .dataframe {
-        color: inherit;
-    }
 </style>
 """, unsafe_allow_html=True)
 
-# Constants
+# Constants - CORRECTED: 2015-2026
 TRAINING_YEAR_START = 2015
-TRAINING_YEAR_END = 2025
+TRAINING_YEAR_END = 2026  # Updated from 2025 to 2026
 FEATURE_COLUMNS = ['year', 'month', 'patient_age_years', 'patient_weight_kg', 
                    'patient_sex', 'brand_name', 'pharm_class', 'num_drugs', 'num_reactions']
 
@@ -256,7 +202,7 @@ def generate_recommendations(prediction, prediction_proba, risk_factors, year):
                 'timeline': 'Monitor closely'
             })
     
-    # Year extrapolation warning
+    # Year extrapolation warning - only for years beyond 2026
     if year > TRAINING_YEAR_END:
         recommendations.append({
             'priority': 'INFO',
@@ -287,8 +233,9 @@ def main():
         year = st.number_input("Reporting Year", min_value=2015, max_value=2030, value=2024)
         month = st.slider("Reporting Month", min_value=1, max_value=12, value=6)
         
+        # Only show warning for years beyond 2026
         if year > TRAINING_YEAR_END:
-            st.warning(f"⚠️ Year {year} is outside the training range (2015-2025)")
+            st.warning(f"⚠️ Year {year} is outside the training range ({TRAINING_YEAR_START}-{TRAINING_YEAR_END})")
         
         st.markdown("---")
         st.subheader("Patient Demographics")
@@ -316,7 +263,7 @@ def main():
         st.subheader("About This Tool")
         st.write(f"""
         This tool uses a **Random Forest model** trained on FDA adverse event reports 
-        from {TRAINING_YEAR_START}-{TRAINING_YEAR_END} to predict whether an adverse drug reaction 
+        from **{TRAINING_YEAR_START}-{TRAINING_YEAR_END}** to predict whether an adverse drug reaction 
         is likely to be **serious** (requiring hospitalization, life-threatening, or resulting in death/disability).
         
         **Model Performance:**
@@ -398,7 +345,7 @@ def main():
                     else:
                         st.info(f"**{factor}** - {reason}")
             
-            # Recommendations - Using native streamlit components for better theming
+            # Recommendations
             st.subheader("📋 Recommendations")
             recommendations = generate_recommendations(prediction, prediction_proba, risk_factors, year)
             
@@ -437,14 +384,14 @@ def data_exploration_page():
     
     st.subheader("Annual Report Trends")
     fig, ax = plt.subplots(figsize=(10, 5))
-    years = list(range(2015, 2026))
-    reports = [25000, 28000, 31000, 35000, 38000, 42000, 48000, 52000, 58000, 62000, 65000]
+    years = list(range(2015, 2027))  # Updated to 2026
+    reports = [25000, 28000, 31000, 35000, 38000, 42000, 48000, 52000, 58000, 62000, 65000, 68000]
     ax.plot(years, reports, marker='o', color='steelblue', linewidth=2)
     ax.fill_between(years, reports, alpha=0.3, color='steelblue')
     ax.set_xlabel('Year')
     ax.set_ylabel('Number of Reports')
-    ax.set_title('Adverse Event Reports by Year')
-    ax.axvspan(2026, 2030, alpha=0.2, color='red', label='Extrapolation Zone')
+    ax.set_title(f'Adverse Event Reports by Year ({TRAINING_YEAR_START}-{TRAINING_YEAR_END})')
+    ax.axvspan(2027, 2030, alpha=0.2, color='red', label='Extrapolation Zone')
     ax.legend()
     st.pyplot(fig)
     plt.close()
@@ -499,7 +446,7 @@ st.sidebar.markdown("---")
 st.sidebar.markdown(f"""
 **About**  
 - Built with Random Forest  
-- Trained on FDA FAERS (2015-2025)  
+- Trained on FDA FAERS (**{TRAINING_YEAR_START}-{TRAINING_YEAR_END}**)  
 - Accuracy: 71.8% | Precision: 85.7%  
 - For educational purposes only
 """)
