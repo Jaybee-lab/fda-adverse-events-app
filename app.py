@@ -56,7 +56,7 @@ def load_models():
     try:
         model = joblib.load('fda_random_forest_model.pkl')
         scaler = joblib.load('fda_scaler.pkl')
-        encoder = joblib.load('encoder.pkl')
+        encoder = joblib.load('fda_encoder.pkl')
         return model, scaler, encoder
     except FileNotFoundError as e:
         st.error(f"Model file not found: {e}")
