@@ -3,9 +3,9 @@ import pandas as pd
 import joblib
 
 # Load artifacts
-model = joblib.load('rf_model.pkl')
-scaler = joblib.load('scaler.pkl')
-encoder = joblib.load('encoder.pkl')
+model = joblib.load('fda_random_forest_model.pkl')
+scaler = joblib.load('fda_scaler.pkl')
+encoder = joblib.load('fda_encoder.pkl')
 
 st.title("FDA Adverse Event Risk Predictor")
 st.write("This tool uses machine learning to predict if a drug side effect report is likely to be classified as 'Serious'.")
