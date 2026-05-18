@@ -7,7 +7,7 @@ import joblib
 @st.cache_resource
 def load_assets():
     # Make sure these filenames match exactly what you downloaded from Colab
-    model = joblib.load('fda_rf_model.pkl')
+    model = joblib.load('fda_random_forest_model.pkl')
     scaler = joblib.load('fda_scaler.pkl')
     return model, scaler
 
